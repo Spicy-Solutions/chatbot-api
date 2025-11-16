@@ -1,13 +1,4 @@
-Below is a clean, complete, and nicely formatted **README.md** that includes:
-
-✅ Project description (Chatbot API with OpenAI)
-✅ How the API works
-✅ Setup instructions based on your steps
-✅ Usage explanation
-
----
-
-# 📘 **README – ChatGPT Python API Project**
+# 📘 **ChatGPT Python API Project**
 
 ## 🚀 Overview
 
