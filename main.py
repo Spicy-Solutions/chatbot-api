@@ -21,7 +21,25 @@ def models():
 @app.post("/chat")
 async def chat(req: ChatRequest):
     response = client.models.generate_content(
-        model="gemini-2.5-flash", contents= req.message
+        model="gemini-2.5-flash", 
+        contents= [
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": f"You are an expert partner in finance and decision making. The manager you are going to help is called {req.username} and the hotel has {req.income} soles of weekly income and ${req.expenses} soles of weekly expenses. Be kind, honest and professional in your responses."
+                    }
+                ]
+            },
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": req.message
+                    }
+                ]
+            }
+        ]
     )
     
     return {
