@@ -5,3 +5,4 @@ class ChatRequest(BaseModel):
     username: str
     income: float
     expenses: float
+    conversation_id : str
