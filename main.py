@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
 
     api_key = os.getenv("GEMINI_APIKEY")
     if not api_key:
-        raise RuntimeError("❌ Missing GEMINI_APIKEY in .env")
+        raise RuntimeError("Missing GEMINI_APIKEY in .env")
 
     try:
         app.state.genai_client = genai.Client(api_key=api_key)
@@ -41,9 +41,9 @@ async def lifespan(app: FastAPI):
 
     app.state.memory = {}
 
-    print("✅ Startup completed")
+    print("Startup completed")
     yield
-    print("🛑 Shutdown completed")
+    print("Shutdown completed")
 
 app = FastAPI(lifespan=lifespan)
 
@@ -80,7 +80,7 @@ async def chat(req: ChatRequest):
     memory = app.state.memory
     client = app.state.genai_client
 
-    # 1. New conversation → initialize memory
+    # 1. New conversation
     if req.conversation_id not in memory:
         system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
             username=req.username,
