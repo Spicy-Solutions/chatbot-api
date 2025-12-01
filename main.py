@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import uuid
 
 load_dotenv()
 
@@ -80,19 +81,22 @@ async def chat(req: ChatRequest):
     memory = app.state.memory
     client = app.state.genai_client
 
+    # Generate conversation_id if not provided
+    conversation_id = req.conversation_id or str(uuid.uuid4())
+
     # 1. New conversation
-    if req.conversation_id not in memory:
+    if conversation_id not in memory:
         system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
             username=req.username,
             income=req.income,
             expenses=req.expenses,
         )
-        memory[req.conversation_id] = [
+        memory[conversation_id] = [
             {"role": "user", "parts": [{"text": system_prompt}]}
         ]
 
     # 2. Add user message
-    memory[req.conversation_id].append(
+    memory[conversation_id].append(
         {"role": "user", "parts": [{"text": req.message}]}
     )
 
@@ -100,14 +104,17 @@ async def chat(req: ChatRequest):
     try:
         response = client.models.generate_content(
             model="gemini-2.0-flash",
-            contents=memory[req.conversation_id],
+            contents=memory[conversation_id],
         )
     except Exception as e:
         raise HTTPException(500, f"Gemini model error: {e}")
 
     # 4. Store assistant response
-    memory[req.conversation_id].append(
+    memory[conversation_id].append(
         {"role": "model", "parts": [{"text": response.text}]}
     )
 
-    return {"message": response.text}
+    return {
+        "message": response.text,
+        "conversation_id": conversation_id
+    }
